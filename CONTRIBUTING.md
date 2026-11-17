@@ -1,6 +1,6 @@
 # Contributing
 
-Use **Node.js 20+** and **pnpm** (see `package.json` `packageManager`).
+Use **Node.js 26.13.1+** and **pnpm** (see `.nvmrc` and `package.json` `packageManager`).
 
 ```bash
 pnpm install

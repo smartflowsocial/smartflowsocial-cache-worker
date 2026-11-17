@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/smartflowsocial/smartflowsocial-cache-worker/actions/workflows/ci.yml/badge.svg)](https://github.com/smartflowsocial/smartflowsocial-cache-worker/actions/workflows/ci.yml)
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue)](LICENSE)
-[![Node 20+](https://img.shields.io/badge/node-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Node 26.13.1+](https://img.shields.io/badge/node-26.13.1%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
 Primal-compatible cache API for [SmartFlowSocial](https://smartflow.social). A Cloudflare Worker that reads NostrMash first, falls back to Primal Cache, and always returns Primal `EVENT` frames.
 
@@ -34,7 +34,7 @@ The GitHub repository is `smartflowsocial-cache-worker`. The Cloudflare script n
 
 ### Prerequisites
 
-- Node.js 20+ and [pnpm](https://pnpm.io/) installed
+- Node.js 26.13.1+ and [pnpm](https://pnpm.io/) installed
 - Cloudflare account
 - Wrangler (via devDependencies; or install globally with `pnpm add -g wrangler`)
 
