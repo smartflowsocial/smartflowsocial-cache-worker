@@ -9,9 +9,7 @@ import { MockPrimalWebSocket } from './mock-primal-websocket';
 
 type WorkerRequest = Parameters<NonNullable<typeof worker.fetch>>[0];
 
-function streamingRequest(
-	init: RequestInit & { duplex: 'half' },
-): WorkerRequest {
+function streamingRequest(init: RequestInit & { duplex: 'half' }): WorkerRequest {
 	return new Request('http://example.com', init) as WorkerRequest;
 }
 
