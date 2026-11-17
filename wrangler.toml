@@ -1,7 +1,7 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "smartflowsocial-primal-cache-worker"
 main = "src/index.ts"
-compatibility_date = "2024-12-05"
+compatibility_date = "2026-11-17"
 
 # No Node.js built-ins required; smaller runtime surface without nodejs_compat.
 # Optional observability: bind Analytics Engine and write datapoints from the Worker.
