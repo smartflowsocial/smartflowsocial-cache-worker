@@ -240,6 +240,98 @@ describe('Primal cache worker', () => {
 		expect(json.error).toContain('requestType');
 	});
 
+	it('stops a chunked body at the limit and does not keep reading', async () => {
+		let pulled = 0;
+		let cancelled = false;
+		const chunk = new Uint8Array(64 * 1024);
+		const stream = new ReadableStream<Uint8Array>({
+			pull(controller) {
+				if (cancelled) return;
+				pulled += chunk.byteLength;
+				controller.enqueue(chunk);
+			},
+			cancel() {
+				cancelled = true;
+			},
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch!(
+			new Request('http://example.com', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: stream,
+				duplex: 'half',
+			} as RequestInit),
+			env,
+			ctx,
+		);
+		await waitOnExecutionContext(ctx);
+		expect(response.status).toBe(413);
+		expect(pulled).toBeLessThanOrEqual(256 * 1024 + chunk.byteLength);
+		expect(cancelled).toBe(true);
+	});
+
+	it('does not trust a small Content-Length when the stream is larger', async () => {
+		let pulled = 0;
+		const chunk = new Uint8Array(64 * 1024);
+		const stream = new ReadableStream<Uint8Array>({
+			pull(controller) {
+				pulled += chunk.byteLength;
+				controller.enqueue(chunk);
+			},
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch!(
+			new Request('http://example.com', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': '16',
+				},
+				body: stream,
+				duplex: 'half',
+			} as RequestInit),
+			env,
+			ctx,
+		);
+		await waitOnExecutionContext(ctx);
+		expect(response.status).toBe(413);
+		expect(pulled).toBeLessThanOrEqual(256 * 1024 + chunk.byteLength);
+	});
+
+	it('accepts a body of exactly 256 KiB that is not valid JSON', async () => {
+		const ctx = createExecutionContext();
+		const response = await worker.fetch!(
+			new Request('http://example.com', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: 'x'.repeat(256 * 1024),
+			}),
+			env,
+			ctx,
+		);
+		await waitOnExecutionContext(ctx);
+		expect(response.status).toBe(400);
+	});
+
+	it('accepts a small body when Content-Length is not a number', async () => {
+		const ctx = createExecutionContext();
+		const response = await worker.fetch!(
+			new Request('http://example.com', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': 'not-a-length',
+				},
+				body: JSON.stringify({ requestType: 'network_stats' }),
+			}),
+			env,
+			ctx,
+		);
+		await waitOnExecutionContext(ctx);
+		expect(response.status).toBe(200);
+	});
+
 	it('returns 413 when Content-Length exceeds limit before reading body', async () => {
 		const ctx = createExecutionContext();
 		const smallBody = JSON.stringify({ requestType: 'network_stats' });

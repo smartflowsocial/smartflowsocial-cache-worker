@@ -54,23 +54,55 @@ function jsonResponse(traceId: string, status: number, payload: Record<string, u
 	});
 }
 
+function declaredLengthOverLimit(header: string | null, maxBytes: number): boolean {
+	if (header === null) return false;
+	const trimmed = header.trim();
+	if (!/^\d+$/.test(trimmed)) return false;
+	const declared = Number(trimmed);
+	return Number.isSafeInteger(declared) && declared > maxBytes;
+}
+
+/**
+ * Stops once the body passes `maxBytes`. A missing, non-numeric, or too-small
+ * Content-Length is not trusted. The overflowing chunk is not kept.
+ */
 async function readBodyWithLimit(
 	request: Request,
 	maxBytes: number,
 	traceId: string,
 ): Promise<ArrayBuffer> {
-	const cl = request.headers.get('content-length');
-	if (cl !== null) {
-		const n = Number(cl);
-		if (Number.isFinite(n) && n > maxBytes) {
-			throw new WorkerHttpError(413, 'Request body too large', traceId);
-		}
-	}
-	const buf = await request.arrayBuffer();
-	if (buf.byteLength > maxBytes) {
+	if (declaredLengthOverLimit(request.headers.get('content-length'), maxBytes)) {
 		throw new WorkerHttpError(413, 'Request body too large', traceId);
 	}
-	return buf;
+	const stream = request.body;
+	if (!stream) return new ArrayBuffer(0);
+
+	const reader = stream.getReader() as ReadableStreamDefaultReader<Uint8Array>;
+	const chunks: Uint8Array[] = [];
+	let total = 0;
+	try {
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) break;
+			if (!value || value.byteLength === 0) continue;
+			if (total + value.byteLength > maxBytes) {
+				await reader.cancel();
+				throw new WorkerHttpError(413, 'Request body too large', traceId);
+			}
+			chunks.push(value);
+			total += value.byteLength;
+		}
+	} finally {
+		reader.releaseLock();
+	}
+
+	const body = new Uint8Array(total);
+	let offset = 0;
+	for (const chunk of chunks) {
+		body.set(chunk, offset);
+		offset += chunk.byteLength;
+	}
+	return body.buffer.slice(body.byteOffset, body.byteOffset + body.byteLength);
 }
 
 async function loadCache(

@@ -28,6 +28,7 @@ The GitHub repository is `smartflowsocial-cache-worker`. The Cloudflare script n
 - CORS support for browser-based applications
 - Support for 80+ Primal cache request types
 - Automatic connection retry with timeout handling
+- Request bodies are limited to 256 KiB while they are read. An oversized `Content-Length` is rejected before the body is read. A missing or smaller length is not trusted.
 
 ## Deployment
 
