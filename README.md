@@ -206,7 +206,7 @@ Runs Prettier (check), ESLint, TypeScript, `cf-types:check`, and Vitest. After c
 │   ├── request-types.ts         # Loads allowlist JSON
 │   └── data/
 │       └── primal-request-types.json   # Supported Primal requestType values
-├── test/                        # Vitest + @cloudflare/vitest-pool-workers
+├── test/                        # Vitest + @cloudflare/vitest-plugin
 ├── worker-configuration.d.ts    # Generated: pnpm run cf-types
 ├── wrangler.toml
 ├── package.json
