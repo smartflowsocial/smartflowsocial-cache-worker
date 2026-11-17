@@ -7,6 +7,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import worker from '../src/index';
 import { MockPrimalWebSocket } from './mock-primal-websocket';
 
+type WorkerRequest = Parameters<NonNullable<typeof worker.fetch>>[0];
+
+function streamingRequest(
+	init: RequestInit & { duplex: 'half' },
+): WorkerRequest {
+	return new Request('http://example.com', init) as WorkerRequest;
+}
+
 describe('Primal cache worker', () => {
 	beforeEach(() => {
 		MockPrimalWebSocket.instances = [];
@@ -256,12 +264,12 @@ describe('Primal cache worker', () => {
 		});
 		const ctx = createExecutionContext();
 		const response = await worker.fetch!(
-			new Request('http://example.com', {
+			streamingRequest({
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: stream,
 				duplex: 'half',
-			} as RequestInit),
+			}),
 			env,
 			ctx,
 		);
@@ -282,7 +290,7 @@ describe('Primal cache worker', () => {
 		});
 		const ctx = createExecutionContext();
 		const response = await worker.fetch!(
-			new Request('http://example.com', {
+			streamingRequest({
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -290,7 +298,7 @@ describe('Primal cache worker', () => {
 				},
 				body: stream,
 				duplex: 'half',
-			} as RequestInit),
+			}),
 			env,
 			ctx,
 		);
