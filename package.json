@@ -14,7 +14,7 @@
 		"url": "https://github.com/smartflowsocial/smartflowsocial-cache-worker/issues"
 	},
 	"type": "module",
-	"packageManager": "pnpm@10.27.0",
+	"packageManager": "pnpm@12.21.0",
 	"engines": {
 		"node": ">=26.13.1"
 	},
@@ -32,24 +32,6 @@
 		"cf-types": "wrangler types",
 		"cf-types:check": "wrangler types && git diff --exit-code worker-configuration.d.ts",
 		"validate": "pnpm run format:check && pnpm run lint:ci && pnpm run typecheck && pnpm run cf-types:check && pnpm run test"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild",
-			"sharp",
-			"workerd"
-		],
-		"overrides": {
-			"@typescript-eslint/typescript-estree>typescript": "6.0.2",
-			"@typescript-eslint/parser>typescript": "6.0.2",
-			"@typescript-eslint/eslint-plugin>typescript": "6.0.2",
-			"@typescript-eslint/utils>typescript": "6.0.2",
-			"@typescript-eslint/type-utils>typescript": "6.0.2",
-			"@typescript-eslint/project-service>typescript": "6.0.2",
-			"@typescript-eslint/scope-manager>typescript": "6.0.2",
-			"@typescript-eslint/tsconfig-utils>typescript": "6.0.2",
-			"typescript-eslint>typescript": "6.0.2"
-		}
 	},
 	"dependencies": {
 		"zod": "^4.6.7"
