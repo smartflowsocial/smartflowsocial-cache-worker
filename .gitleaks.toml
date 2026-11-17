@@ -1,0 +1,4 @@
+title = "SmartFlowSocial cache worker scan"
+
+[extend]
+useDefault = true
