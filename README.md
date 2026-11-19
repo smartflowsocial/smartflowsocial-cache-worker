@@ -4,9 +4,11 @@
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue)](LICENSE)
 [![Node 26.13.1+](https://img.shields.io/badge/node-26.13.1%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
-Primal-compatible cache API for [SmartFlowSocial](https://smartflow.social). A Cloudflare Worker that reads NostrMash first, falls back to Primal Cache, and always returns Primal `EVENT` frames.
+> **Historical repository.** SmartFlowSocial no longer uses this worker. The maintained utility is [nostrmash/nostr-read-gateway](https://github.com/nostrmash/nostr-read-gateway). That project has its own Git history and does not inherit this one. This repository stays available as a reference. It has not been transferred or archived.
 
-Part of SmartFlowSocial. Related pieces: [app](https://github.com/smartflowsocial/smartflowsocial), [publisher](https://github.com/smartflowsocial/smartflowsocial-publisher), [Blastr](https://github.com/smartflowsocial/smartflowsocial-blastr), [Blossom](https://github.com/smartflowsocial/smartflowsocial-blossom).
+This tree is the older Cloudflare Worker that routed Primal-compatible reads through a fixed upstream order. It is not an application backend anymore.
+
+Related historical pieces: [app](https://github.com/smartflowsocial/smartflowsocial), [publisher](https://github.com/smartflowsocial/smartflowsocial-publisher), [Blastr](https://github.com/smartflowsocial/smartflowsocial-blastr), [Blossom](https://github.com/smartflowsocial/smartflowsocial-blossom).
 
 The GitHub repository is `smartflowsocial-cache-worker`. The Cloudflare script name in `wrangler.toml` stays `smartflowsocial-primal-cache-worker`.
 
